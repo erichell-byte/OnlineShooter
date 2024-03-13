@@ -1,32 +1,82 @@
 using UnityEngine;
 
-public class PlayerCharacter : MonoBehaviour
+public class PlayerCharacter : Character
 {
-   [SerializeField] private float speed;
+   [SerializeField] private Rigidbody _rb;
+   [SerializeField] private Transform _head;
+   [SerializeField] private Transform _cameraPoint;
+   [SerializeField] private float _maxHeadAngle = 90;
+   [SerializeField] private float _minHeadAngle = -90;
+   [SerializeField] private float _jumpForce = 50f;
+   [SerializeField] private CheckFly checkFly;
+   [SerializeField] private float _jumpDelay = .15f;
    
-   private float hInput;
-   private float vInput;
+   private float _inputV;
+   private float _inputH;
+   private float _rotateY;
+   private float _currentRotateX;
+   private float _jumpTime;
 
-   private void Update()
+   private Vector3 direction;
+
+   private void Start()
+   {
+      Transform camera = Camera.main.transform;
+      camera.parent = _cameraPoint;
+      camera.localPosition = Vector3.zero;
+      camera.localRotation = Quaternion.identity;
+   }
+   
+   private void FixedUpdate()
    {
       Move();
+      RotateY();
    }
 
-   public void SetInput(float h, float v)
+   public void SetInput(float h, float v, float rotateY)
    {
-      hInput = h;
-      vInput = v;
+      _inputV = h;
+      _inputH = v;
+      _rotateY = rotateY;
    }
    
    private void Move()
    {
-      Vector3 direction = new Vector3(hInput, 0, vInput).normalized;
+      //direction = new Vector3(_inputV, 0, _inputH).normalized;
+      //transform.position += direction * (speed * Time.deltaTime);
 
-      transform.position += direction * (speed * Time.deltaTime);
+      Vector3 velocity = (transform.forward * _inputH + transform.right * _inputV).normalized * speed;
+      velocity.y = _rb.velocity.y;
+      base.velocity = velocity;
+      _rb.velocity = base.velocity;
    }
 
-   public void GetMoveInfo(out Vector3 position)
+   public void RotateX(float value)
+   {
+      _currentRotateX = Mathf.Clamp(_currentRotateX + value, _minHeadAngle, _maxHeadAngle);
+      _head.localEulerAngles = new Vector3(_currentRotateX, 0, 0);
+   }
+
+   public void RotateY()
+   {
+      _rb.angularVelocity = new Vector3(0, _rotateY, 0);
+      _rotateY = 0;
+   }
+
+   public void GetMoveInfo(out Vector3 position, out Vector3 velocity, out float rotateX, out float rotateY)
    {
       position = transform.position;
+      velocity = _rb.velocity;
+      rotateY = transform.eulerAngles.y;
+      rotateX = _head.localEulerAngles.x;
+   }
+   
+   public void Jump()
+   {
+      if (checkFly.IsFly) return;
+      if (Time.time - _jumpTime < _jumpDelay) return;
+
+      _jumpTime = Time.time;
+      _rb.AddForce(0,_jumpForce,0, ForceMode.VelocityChange);
    }
 }
