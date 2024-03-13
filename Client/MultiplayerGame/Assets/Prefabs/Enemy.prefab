@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1676872143019512814}
   - component: {fileID: 4219746526035935091}
   - component: {fileID: 3141977332036998145}
+  - component: {fileID: 171699878599507169}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -75,7 +76,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <speed>k__BackingField: 2
+  isCrouch: 0
   _head: {fileID: 4463394210489060340}
+  _animator: {fileID: 171699878599507169}
 --- !u!114 &1933707161027515659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,7 +105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e175ec5c2fd94594b89931cb059e2b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 2756827106397845017}
+  _footAnimator: {fileID: 2756827106397845017}
+  _commonAnimator: {fileID: 171699878599507169}
   _checkFly: {fileID: 1676872143019512814}
   character: {fileID: 6591017963306420460}
 --- !u!114 &1676872143019512814
@@ -149,6 +153,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gun: {fileID: 4219746526035935091}
   _animator: {fileID: 2175847652215412981}
+--- !u!95 &171699878599507169
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350203492712928176}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ab3067237ee9040a7953cf0e30888f9d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &7565270042724970825
 PrefabInstance:
   m_ObjectHideFlags: 0

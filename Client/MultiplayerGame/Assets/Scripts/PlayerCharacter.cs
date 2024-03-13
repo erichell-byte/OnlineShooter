@@ -16,6 +16,7 @@ public class PlayerCharacter : Character
    private float _rotateY;
    private float _currentRotateX;
    private float _jumpTime;
+   private bool _isCrouch;
 
    private Vector3 direction;
 
@@ -63,12 +64,13 @@ public class PlayerCharacter : Character
       _rotateY = 0;
    }
 
-   public void GetMoveInfo(out Vector3 position, out Vector3 velocity, out float rotateX, out float rotateY)
+   public void GetMoveInfo(out Vector3 position, out Vector3 velocity, out float rotateX, out float rotateY, out bool isCrouch)
    {
       position = transform.position;
       velocity = _rb.velocity;
       rotateY = transform.eulerAngles.y;
       rotateX = _head.localEulerAngles.x;
+      isCrouch = base.isCrouch;
    }
    
    public void Jump()

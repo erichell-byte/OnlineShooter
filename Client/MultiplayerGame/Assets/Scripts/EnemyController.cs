@@ -86,6 +86,9 @@ public class EnemyController : MonoBehaviour
 				case "rY":
 					_character.SetRotateY((float)dataChange.Value);
 					break;
+				case "c":
+					_character.isCrouch = (bool)dataChange.Value;
+					break;
 				default:
 					Debug.LogWarning("Не обрабатывается изменение поля" + dataChange.Field);
 					break;
