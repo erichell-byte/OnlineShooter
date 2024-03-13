@@ -43,9 +43,6 @@ public class PlayerCharacter : Character
    
    private void Move()
    {
-      //direction = new Vector3(_inputV, 0, _inputH).normalized;
-      //transform.position += direction * (speed * Time.deltaTime);
-
       Vector3 velocity = (transform.forward * _inputH + transform.right * _inputV).normalized * speed;
       velocity.y = _rb.velocity.y;
       base.velocity = velocity;

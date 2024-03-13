@@ -3,7 +3,6 @@ using UnityEngine;
 public class EnemyCharacter : Character
 {
     [SerializeField] private Transform _head;
-    [SerializeField] private Animator _animator;
     public Vector3 targetPosition { get; private set; } = Vector3.zero;
     
     private Quaternion targetRotationX;

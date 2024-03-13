@@ -8,7 +8,6 @@ namespace Core
 	{
 		[SerializeField] private PlayerCharacter _player;
 		[SerializeField] private PlayerGun _playerGun;
-		[SerializeField] private CharacterAnimation _characterAnimation;
 		[SerializeField] private float _mouseSensetivity = 2f;
 
 		private MultiplayerManager multiplayerManager;
