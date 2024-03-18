@@ -1,8 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyCharacter : Character
 {
+    private string _sessionID;
+    
     [SerializeField] private Transform _head;
+    [SerializeField] private Health _health;
     public Vector3 targetPosition { get; private set; } = Vector3.zero;
     
     private Quaternion targetRotationX;
@@ -10,6 +14,11 @@ public class EnemyCharacter : Character
     private float _velocityMagnitude = 0;
     private float _rotationXMagnitude = 0;
     private float _rotationYMagnitude = 0;
+
+    public void Init(string sessionID)
+    {
+        _sessionID = sessionID;
+    }
 
     private void Start()
     {
@@ -41,8 +50,33 @@ public class EnemyCharacter : Character
         }
     }
 
+    public void ApplyDamage(int damage)
+    {
+        _health.ApplyDamage(damage);
+
+        Dictionary<string, object> data = new Dictionary<string, object>()
+        {
+            {"id", _sessionID},
+            {"value", damage}
+        };
+        
+        MultiplayerManager.Instance.SendMessage("damage", data);
+    }
+    
     public void SetSpeed(float value) => speed = value;
 
+    public void SetMaxHP(int value)
+    {
+        maxHealth = value;
+        _health.SetMax(value);
+        _health.SetCurrent(value);
+    }
+
+    public void RestoreHP(int value)
+    {
+        _health.SetCurrent(value);
+    }
+    
     public void SetMovement(in Vector3 position, in Vector3 velocity, in float averageInterval)
     {
         targetPosition = position + (velocity * averageInterval);

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager>
 {
+    [field: SerializeField] public LossCounter _lossCounter { get; private set; }
     [SerializeField] private PlayerCharacter _player;
     [SerializeField] private EnemyController _enemy;
     
@@ -22,7 +23,8 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
     {
         Dictionary<string, object> data = new Dictionary<string, object>()
         {
-            {"speed", _player.speed}
+            {"speed", _player.speed},
+            {"hp", _player.maxHealth}
         };
         
         _room = await Instance.client.JoinOrCreate<State>("state_handler", data);
@@ -60,18 +62,22 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
     {
         var position = new Vector3(player.pX, player.pY, player.pZ);
 
-        Instantiate(_player, position, Quaternion.identity);
+        var playerCharacter = Instantiate(_player, position, Quaternion.identity);
+
+        player.OnChange += playerCharacter.OnChange;
+        _room.OnMessage<string>("Restart", playerCharacter.GetComponent<PlayerController>().Restart);
     }
     
-    private void CreateEnemy(string key, Player player)
+
+    private void CreateEnemy(string sessionID, Player player)
     {
         var position = new Vector3(player.pX, player.pY, player.pZ);
 
         var enemy = Instantiate(_enemy, position, Quaternion.identity);
         
-        enemy.Init(player);
+        enemy.Init(player, sessionID);
         
-        _enemies.Add(key, enemy);
+        _enemies.Add(sessionID, enemy);
     }
     
     private void RemoveEnemy(string key, Player value)

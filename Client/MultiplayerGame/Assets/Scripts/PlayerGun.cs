@@ -6,6 +6,7 @@ public class PlayerGun : Gun
     [SerializeField] private Transform _bulletPoint;
     [SerializeField] private float _bulletSpeed;
     [SerializeField] private float _shootDelay;
+    [SerializeField] private int _damage;
 
     private float _lastShootTime;
     public bool TryShoot(out ShootInfo info)
@@ -17,7 +18,7 @@ public class PlayerGun : Gun
         
         var position = _bulletPoint.position;
         var velocity = _bulletPoint.forward * _bulletSpeed;
-        Instantiate(_bulletPrefab, position, _bulletPoint.rotation).Init(velocity);
+        Instantiate(_bulletPrefab, position, _bulletPoint.rotation).Init(velocity, _damage);
         
         shoot?.Invoke();
         

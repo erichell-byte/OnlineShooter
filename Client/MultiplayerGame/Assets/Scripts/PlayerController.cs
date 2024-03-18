@@ -1,17 +1,19 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Core
 {
-	public class PlayerController : MonoBehaviour
+	public  class PlayerController : MonoBehaviour
 	{
+		[SerializeField] private float _restartDelay;
 		[SerializeField] private PlayerCharacter _player;
 		[SerializeField] private PlayerGun _playerGun;
 		[SerializeField] private float _mouseSensetivity = 2f;
 
 		private MultiplayerManager multiplayerManager;
-
+		private bool _hold;
 		private void Start()
 		{
 			multiplayerManager = MultiplayerManager.Instance;
@@ -19,6 +21,7 @@ namespace Core
 
 		private void Update()
 		{
+			if (_hold) return;
 			float h = Input.GetAxisRaw("Horizontal");
 			float v = Input.GetAxisRaw("Vertical");
 
@@ -61,13 +64,42 @@ namespace Core
 				{"vZ", velocity.z},
 				{"rX", rotateX},
 				{"rY", rotateY},
-				{"c", isCrouch ? 1 : 0},
+				{"c", isCrouch},
 			};
 			multiplayerManager.SendMessage("move", data);
 		}
 		
-	}
+		public void Restart(string jsonRestartInfo)
+		{
+			RestartInfo info = JsonUtility.FromJson<RestartInfo>(jsonRestartInfo);
+			StartCoroutine(Hold());
+			
+			_player.transform.position = new Vector3(info.x, _player.transform.position.y, info.z);
+			_player.SetInput(0,0,0);
+			
+			Dictionary<string, object> data = new Dictionary<string, object>()
+			{
+				{"pX", info.x},
+				{"pY", 0},
+				{"pZ", info.z},
+				{"vX", 0},
+				{"vY", 0},
+				{"vZ", 0},
+				{"rX", 0},
+				{"rY", 0},
+				{"c", false},
+			};
+			multiplayerManager.SendMessage("move", data);
+		}
 
+		private IEnumerator Hold()
+		{
+			_hold = true;
+			yield return new WaitForSecondsRealtime(_restartDelay);
+			_hold = false;
+		}
+	}
+	
 	[Serializable]
 	public struct ShootInfo
 	{
@@ -78,5 +110,12 @@ namespace Core
 		public float vX;
 		public float vY;
 		public float vZ;
+	}
+
+	[Serializable]
+	public struct RestartInfo
+	{
+		public float x;
+		public float z;
 	}
 }
