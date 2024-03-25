@@ -96,7 +96,7 @@ public class PlayerCharacter : Character
                _health.SetCurrent((sbyte)dataChange.Value);
                break;
             case "loss":
-               MultiplayerManager.Instance._lossCounter.SetPlayerLoss((byte)dataChange.Value);
+               MultiplayerManager.Instance.lossCounter.SetPlayerLoss((byte)dataChange.Value);
                break;
             default:
                Debug.LogWarning("Не обрабатывается изменение поля" + dataChange.Field);
