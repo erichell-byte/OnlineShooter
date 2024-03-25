@@ -8,4 +8,5 @@ public abstract class Character : MonoBehaviour
     public Vector3 velocity { get; protected set; }
 
     public bool isCrouch;
+    
 }
