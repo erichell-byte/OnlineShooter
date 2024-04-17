@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Projects/Shooter/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Projects/Snake/Scenes/Main.unity
+    path: Assets/Projects/Snake/Scenes/Lobby.unity
+    guid: 4f37f0f56e51e4df887d8be6c5f1272d
+  - enabled: 1
+    path: Assets/Projects/Snake/Scenes/Game.unity
     guid: 7bbb5bc48e51e498ba76aec288ed1f2e
   m_configObjects: {}

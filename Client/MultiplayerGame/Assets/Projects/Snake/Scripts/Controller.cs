@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Colyseus.Schema;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace SnakeGame
@@ -13,21 +12,26 @@ namespace SnakeGame
         private MultiplayerManager _multiplayerManager;
         private PlayerAim _playerAim;
         private Player _player;
-        private SnakeHead snakeHead;
+        private SnakeHead _snakeHead;
         private Camera _camera;
         private Plane _plane;
+        private string _clientId;
 
 
-        public void Init(PlayerAim aim, Player player, SnakeHead snakeHead)
+        public void Init(string clientId, PlayerAim aim, Player player, SnakeHead snakeHead)
         {
             _multiplayerManager = MultiplayerManager.Instance;
             _playerAim = aim;
             _player = player;
-            this.snakeHead = snakeHead;
+            _clientId = clientId;
+            _snakeHead = snakeHead;
             _camera = Camera.main;
             _plane = new Plane(Vector3.up, Vector3.zero);
             
-            this.snakeHead.AddComponent<CameraManager>().Init(_cameraOffsetY);
+            _camera.transform.parent = snakeHead.transform;
+            _camera.transform.localPosition = Vector3.up * _cameraOffsetY;
+            
+            _snakeHead._loginView.SetLoginText(player.login);
             
             _player.OnChange += OnChange;
             
@@ -69,7 +73,9 @@ namespace SnakeGame
         
         private void OnChange(List<DataChange> changes)
         {
-            var position = snakeHead.transform.position;
+            if (_snakeHead == null) return;
+            
+            var position = _snakeHead.transform.position;
             for (int i = 0; i < changes.Count; i++)
             {
                 switch (changes[i].Field)
@@ -81,20 +87,27 @@ namespace SnakeGame
                         position.z = (float)changes[i].Value;
                         break;
                     case "d":
-                        snakeHead.SetDetailCount((byte)changes[i].Value);
+                        _snakeHead.SetDetailCount((byte)changes[i].Value);
+                        break;
+                    case "score":
+                        _multiplayerManager.UpdateScore(_clientId, (ushort)changes[i].Value);
                         break;
                     default:
                         Debug.LogWarning($"Нe обрабатывается изменение поля {changes[i].Value}");
                         break;
                 }
             }
-            snakeHead.SetRotation(position);
+            //TODO может нужно позицию задавать playerAim?
+            _snakeHead.SetRotation(position);
         }
 
         public void Destroy()
         {
+            _camera.transform.parent = null;
+            
             _player.OnChange -= OnChange;
-            snakeHead.Destroy();
+            _snakeHead.Destroy(_clientId);
+            Destroy(gameObject);
         }
     }
 }
