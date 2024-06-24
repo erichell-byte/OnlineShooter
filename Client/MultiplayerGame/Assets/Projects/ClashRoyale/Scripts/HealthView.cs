@@ -3,16 +3,29 @@ using UnityEngine.UI;
 
 public class HealthView : MonoBehaviour
 {
+    [SerializeField] private GameObject _healthBarGO;
     [SerializeField] private Health _health;
     [SerializeField] private Image _healhtBar;
+
+    private float _maxHealth;
     
-    private void Awake()
+    private void Start()
     {
-        _health.OnChangeInPercent += UpdateView;
+        _healthBarGO.SetActive(false);
+        _health.UpdateHealth += UpdateView;
+        _maxHealth = _health.max;
+    }
+    
+    private void UpdateView(float newValue)
+    {
+        _healthBarGO.SetActive(true);
+        _healhtBar.fillAmount = newValue / _maxHealth;
     }
 
-    private void UpdateView(float progress)
+    private void OnDestroy()
     {
-        _healhtBar.fillAmount = progress;
+        _health.UpdateHealth -= UpdateView;
     }
+
+    
 }

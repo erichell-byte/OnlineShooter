@@ -1,11 +1,18 @@
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(UnitParameters), typeof (Health))]
-public class Unit : MonoBehaviour, IHealth
-{
+[RequireComponent(
+    typeof(UnitParameters), 
+    typeof (Health), 
+    typeof (UnitAnimation))]
+public class Unit : MonoBehaviour, IHealth, IDestroyed
+{ 
+    public event Action Destroyed;
+    
     [field: SerializeField] public Health health { get; private set; }
     [field: SerializeField] public bool isEnemy { get; private set; }
     [field: SerializeField] public UnitParameters parameters { get; private set; }
+    [SerializeField] private UnitAnimation _animation;
     [SerializeField] private UnitState _defaultStateSO;
     [SerializeField] private UnitState _chaseStateSO;
     [SerializeField] private UnitState _attackStateSO;
@@ -15,9 +22,21 @@ public class Unit : MonoBehaviour, IHealth
     private UnitState _attackState;
     private UnitState _currentState;
     
+    
+    
     private void Start()
     {
+        _animation.Init(this);
+        CreateStates();
+        
+        _currentState = _defaultState;
+        _currentState.Init();
+        
         health.OnDied += Destroy;
+    }
+
+    private void CreateStates()
+    {
         _defaultState = Instantiate(_defaultStateSO);
         _defaultState.Constructor(this);
         
@@ -26,9 +45,6 @@ public class Unit : MonoBehaviour, IHealth
         
         _attackState = Instantiate(_attackStateSO);
         _attackState.Constructor(this);
-
-        _currentState = _defaultState;
-        _currentState.Init();
     }
 
     private void Update()
@@ -56,12 +72,14 @@ public class Unit : MonoBehaviour, IHealth
                 break;
         }
         _currentState.Init();
+        _animation.SetState(stateType);
     }
     
     private void Destroy()
     {
-        MapInfo.Instance.RemoveEntity(isEnemy, isTower: false, this);
+        health.OnDied -= Destroy;
         Destroy(gameObject);
+        Destroyed?.Invoke();
     }
     
 #if UNITY_EDITOR
@@ -72,4 +90,5 @@ public class Unit : MonoBehaviour, IHealth
         if (_chaseStateSO != null) _chaseStateSO.DebugDrawDistance(this);
     }
 #endif
+    
 }

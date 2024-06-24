@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Health : MonoBehaviour
@@ -6,13 +7,12 @@ public class Health : MonoBehaviour
     [field: SerializeField] public float max { get; private set; } = 10f;
     private float _current;
 
-    public event Action<float> OnChangeInPercent; 
+    public event Action<float> UpdateHealth; 
     public event Action OnDied; 
 
     private void Start()
     {
         _current = max;
-        OnChangeInPercent?.Invoke(1f);
     }
 
     public void ApplyDamage(float value)
@@ -24,12 +24,23 @@ public class Health : MonoBehaviour
             OnDied?.Invoke();
         }
         
-        OnChangeInPercent?.Invoke(_current / max);
-        Debug.Log($" обьект {name}: было {_current + value}, стало {_current} здоровья");
+        UpdateHealth?.Invoke(_current);
     }
+
+    public void ApplyDamageDelay(float delay, float damage)
+    {
+        StartCoroutine(DelayDamage(delay, damage));
+    }
+
+    private IEnumerator DelayDamage(float delay, float damage)
+    {
+        yield return new WaitForSeconds(delay);
+        ApplyDamage(damage);
+    }
+    
 }
 
-interface IHealth
+public interface IHealth
 {
     Health health { get; }
 }
